@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from wordcloud import WordCloud
-import math
 from features.helpers import filter_jobs 
 import plotly.express as px
 # import ipywidgets as widgets
@@ -15,46 +14,97 @@ class DataJobsViz(object):
 
     A class to make plots from processed data jobs.
 
-    """
-    def plot_salary_distribution(self, df, country=None,
-                                title="Salary Distribution", xlabel="Salary (USD)",
-                                ylabel="Frequency", bins=20):
+    # """
+    # def plot_salary_distribution(self, df, country=None,
+    #                             title="Salary Distribution", xlabel="Salary (USD)",
+    #                             ylabel="Frequency", bins=20):
+    #     """
+    #     Plot a histogram of salary distribution.
+
+    #     Parameters
+    #     ----------
+    #     df : DataFrame with salary data
+    #     country : str or list, optional -> filter by country/countries
+    #     title, xlabel, ylabel : str -> text for plot
+    #     bins : int -> number of histogram bins
+    #     """
+    #     df_plot = df.copy()
+    #     # Filter by Country
+    #     if country:
+    #         df_plot = df_plot[df_plot['normalized_location'] == country]
+    #         title = f"Salary Distribution in {country}"
+    #      # Histogram plot
+    #     fig = px.histogram(
+    #         df_plot,
+    #         x="salary_year_avg",
+    #         color ="job_title_short",
+    #         nbins=30,
+    #         title = title,
+    #         labels={
+    #             "salary_year_avg": "Average Year Salary (USD)",
+    #             "job_title_short": "Job Title",
+    #         }
+    #     )
+    #     fig.update_layout(
+    #         yaxis_title="Number of Job Offers",
+    #         boxmode="group", 
+    #         template="plotly_white"
+    #     )
+    
+    #     fig.show()
+    def plot_salary_distribution_static(self, df, country=None,
+                                        title="Salary Distribution", 
+                                        xlabel="Salary (USD)",
+                                        ylabel="Frequency", 
+                                        bins=30):
         """
-        Plot a histogram of salary distribution.
+        Plot a static histogram of salary distribution using Seaborn.
 
         Parameters
         ----------
-        df : DataFrame with salary data
+        df : DataFrame with salary data and 'salary_year_avg' column
         country : str or list, optional -> filter by country/countries
         title, xlabel, ylabel : str -> text for plot
         bins : int -> number of histogram bins
         """
         df_plot = df.copy()
-        # Filter by Country
+
+        # 1. Filtrar por País
         if country:
+            # Nota: La función original solo maneja un país.
+            # Si quieres manejar una lista, cambiaría el == a .isin(country)
             df_plot = df_plot[df_plot['normalized_location'] == country]
             title = f"Salary Distribution in {country}"
-         # Histogram plot
-        fig = px.histogram(
-            df_plot,
-            x="salary_year_avg",
-            color ="job_title_short",
-            nbins=30,
-            title = title,
-            labels={
-                "salary_year_avg": "Average Year Salary (USD)",
-                "job_title_short": "Job Title",
-            }
-        )
-        fig.update_layout(
-            yaxis_title="Number of Job Offers",
-            boxmode="group", 
-            template="plotly_white"
-        )
-        fig.savefig() 
-        fig.show()
 
-  
+        # 2. Crear la figura de Matplotlib/Seaborn
+        plt.figure(figsize=(12, 6)) # Define el tamaño del gráfico
+        
+        # Usar sns.histplot para replicar el histograma con 'color' por 'job_title_short'
+        sns.histplot(
+            data=df_plot,
+            x="salary_year_avg",
+            hue="job_title_short", # 'hue' en Seaborn es similar a 'color' en Plotly
+            bins=bins,
+            kde=False, # Puedes cambiar a True si quieres la línea de densidad
+            element="step", # Estilo para diferenciar barras por 'hue'
+        )
+        
+        # 3. Personalizar y Finalizar el Gráfico
+        plt.title(title, fontsize=16)
+        plt.xlabel(xlabel, fontsize=12)
+        plt.ylabel(ylabel, fontsize=12)
+        
+        # Opcional: Ajustar el rango del eje x para mejor visualización de salarios
+        # plt.xlim(0, df_plot['salary_year_avg'].quantile(0.95))
+        
+        # Mueve la leyenda fuera del gráfico
+        plt.legend(title='Job Title', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+        plt.tight_layout() # Asegura que los labels no se corten
+        
+        # Muestra el gráfico
+        plt.show()
+    
 
     def plot_salary_by_country_and_job(self, df, top_countries=7, min_count=100,
                                     title="Top Median Salary by Country and Job Title",
@@ -102,7 +152,7 @@ class DataJobsViz(object):
             barmode="group",
             template="plotly_white"
         )
-            fig.savefig() 
+            fig.write_image("salarybyjobandposition.png")
             fig.show()
 
  
@@ -141,7 +191,7 @@ class DataJobsViz(object):
         
         fig.update_layout(title_text=maintitle,
                          template= "plotly_white")
-        fig.savefig() 
+        fig.write_image("pie_charts_side_by_side.png")
         fig.show()
 
 
@@ -182,7 +232,7 @@ class DataJobsViz(object):
             title = title,
             margin=dict(l=7, r=7, t=7, b=7)
         )
-        fig.savefig() 
+        fig.write_image("skills_wordcloud.png")
         fig.show()
 
 
@@ -220,7 +270,7 @@ class DataJobsViz(object):
             boxmode="group",
             template="plotly_white"
         )
-        fig.savefig() 
+        fig.write_image("distribution_interactive.png")
         fig.show()
 
 
@@ -263,7 +313,7 @@ class DataJobsViz(object):
             boxmode="group",
             template="plotly_white"
         )
-        fig.savefig() 
+        fig.write_image("salary_by_job_title_interactive.png")
         fig.show()
 
 
