@@ -51,6 +51,7 @@ class DataJobsViz(object):
             boxmode="group", 
             template="plotly_white"
         )
+        fig.savefig() 
         fig.show()
 
   
@@ -101,6 +102,7 @@ class DataJobsViz(object):
             barmode="group",
             template="plotly_white"
         )
+            fig.savefig() 
             fig.show()
 
  
@@ -139,6 +141,7 @@ class DataJobsViz(object):
         
         fig.update_layout(title_text=maintitle,
                          template= "plotly_white")
+        fig.savefig() 
         fig.show()
 
 
@@ -179,6 +182,7 @@ class DataJobsViz(object):
             title = title,
             margin=dict(l=7, r=7, t=7, b=7)
         )
+        fig.savefig() 
         fig.show()
 
 
@@ -216,7 +220,7 @@ class DataJobsViz(object):
             boxmode="group",
             template="plotly_white"
         )
-
+        fig.savefig() 
         fig.show()
 
 
@@ -259,7 +263,7 @@ class DataJobsViz(object):
             boxmode="group",
             template="plotly_white"
         )
-
+        fig.savefig() 
         fig.show()
 
 
