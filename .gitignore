@@ -1,0 +1,23 @@
+# Ignorar checkpoints de Jupyter
+**/.ipynb_checkpoints
+
+# Ignorar caché de Python
+**/__pycache__/
+*.pyc
+
+# Ignorar archivos de entorno
+.env/
+*.env
+*.py[cod]
+
+# Ignorar archivos de logs
+*.log
+
+# Ignorar datasets grandes temporales (si los descargás)
+
+data/*.xlsx
+data/*.json
+
+# Ignorar archivos temporales de sistema
+.DS_Store
+Thumbs.db
