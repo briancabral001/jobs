@@ -106,56 +106,167 @@ class DataJobsViz(object):
         plt.show()
     
 
-    def plot_salary_by_country_and_job(self, df, top_countries=7, min_count=100,
-                                    title="Top Median Salary by Country and Job Title",
-                                    xlabel="Country", ylabel="Median Salary (USD)"):
-            """
-            Plot median salary by job title across countries.
+    # def plot_salary_by_country_and_job(self, df, top_countries=7, min_count=100,
+    #                                 title="Top Median Salary by Country and Job Title",
+    #                                 xlabel="Country", ylabel="Median Salary (USD)"):
+    #         """
+    #         Plot median salary by job title across countries.
 
-            Parameters
-            ----------
-            df : DataFrame with job and salary data
-            top_countries : int -> number of most frequent countries to include
-            min_count : int -> minimum job occurrences per country to display
-            title, xlabel, ylabel : str -> text for plot
-            """
-            df = df.dropna(subset=['salary_year_avg'])
+    #         Parameters
+    #         ----------
+    #         df : DataFrame with job and salary data
+    #         top_countries : int -> number of most frequent countries to include
+    #         min_count : int -> minimum job occurrences per country to display
+    #         title, xlabel, ylabel : str -> text for plot
+    #         """
+    #         df = df.dropna(subset=['salary_year_avg'])
 
-            # Contar registros por país
-            country_count = df.groupby('normalized_location')['salary_year_avg'].count().reset_index(name='count')
-            valid_countries = country_count[country_count['count'] >= min_count]['normalized_location']
+    #         # Contar registros por país
+    #         country_count = df.groupby('normalized_location')['salary_year_avg'].count().reset_index(name='count')
+    #         valid_countries = country_count[country_count['count'] >= min_count]['normalized_location']
 
-            df_filtered = df[df['normalized_location'].isin(valid_countries)]
+    #         df_filtered = df[df['normalized_location'].isin(valid_countries)]
 
-            # Mediana por país y job_title
-            stats = df_filtered.groupby(['normalized_location', 'job_title_short'])['salary_year_avg'].median().reset_index()
-            stats = stats.rename(columns={'salary_year_avg': 'median'})
+    #         # Mediana por país y job_title
+    #         stats = df_filtered.groupby(['normalized_location', 'job_title_short'])['salary_year_avg'].median().reset_index()
+    #         stats = stats.rename(columns={'salary_year_avg': 'median'})
 
-            # Mediana general por país para top N
-            top_country_list = stats.groupby('normalized_location')['median'].median().nlargest(top_countries).index
+    #         # Mediana general por país para top N
+    #         top_country_list = stats.groupby('normalized_location')['median'].median().nlargest(top_countries).index
 
-            stats = stats[stats['normalized_location'].isin(top_country_list)]
+    #         stats = stats[stats['normalized_location'].isin(top_country_list)]
             
-            fig = px.bar(
+    #         fig = px.bar(
+    #         stats,
+    #         x='normalized_location',
+    #         y='median',
+    #         color="job_title_short", 
+    #         title= title,
+    #          labels={
+    #                 "job_title_short": "Job Title"
+    #             }
+    #         )
+    #         fig.update_layout(
+    #         xaxis_title= xlabel,
+    #         yaxis_title= ylabel,
+    #         barmode="group",
+    #         template="plotly_white"
+    #     )
+    #         fig.write_image("salarybyjobandposition.png")
+    #         fig.show()
+
+    def plot_salary_by_country_and_job_plotly(self, df, top_countries=7, min_count=100,
+                                        title="Top Median Salary by Country and Job Title",
+                                        xlabel="Country", ylabel="Median Salary (USD)"):
+        """
+        Plot median salary by job title across countries using Plotly.
+
+        Parameters
+        ----------
+        df : DataFrame with job and salary data
+        top_countries : int -> number of most frequent countries to include
+        min_count : int -> minimum job occurrences per country to display
+        title, xlabel, ylabel : str -> text for plot
+        """
+        df = df.dropna(subset=['salary_year_avg'])
+
+        # --- Lógica de Preparación de Datos (Se mantiene igual) ---
+        # Contar registros por país
+        country_count = df.groupby('normalized_location')['salary_year_avg'].count().reset_index(name='count')
+        valid_countries = country_count[country_count['count'] >= min_count]['normalized_location']
+
+        df_filtered = df[df['normalized_location'].isin(valid_countries)]
+
+        # Mediana por país y job_title
+        stats = df_filtered.groupby(['normalized_location', 'job_title_short'])['salary_year_avg'].median().reset_index()
+        stats = stats.rename(columns={'salary_year_avg': 'median'})
+
+        # Mediana general por país para top N
+        top_country_list = stats.groupby('normalized_location')['median'].median().nlargest(top_countries).index
+
+        stats = stats[stats['normalized_location'].isin(top_country_list)]
+        
+        # --- CREACIÓN DEL GRÁFICO CON PLOTLY (Interactivo) ---
+        
+        fig = px.bar(
             stats,
             x='normalized_location',
             y='median',
-            color="job_title_short", 
+            color="job_title_short", # 'color' maneja la agrupación de barras
             title= title,
-             labels={
-                    "job_title_short": "Job Title"
-                }
-            )
-            fig.update_layout(
+            labels={
+                "job_title_short": "Job Title"
+            },
+            # Usamos una paleta cualitativa viva como 'Set2' o 'Pastel'
+            color_discrete_sequence=px.colors.qualitative.Set2 
+        )
+        
+        # Personalización del Layout
+        fig.update_layout(
             xaxis_title= xlabel,
             yaxis_title= ylabel,
-            barmode="group",
-            template="plotly_white"
+            barmode="group", # Asegura que las barras se agrupen lado a lado
+            template="plotly_white",
+            # Opcional: Rota las etiquetas del eje x si hay muchos países
+            xaxis={'tickangle': 45} 
         )
-            fig.write_image("salarybyjobandposition.png")
-            fig.show()
+        
+        
+        # 2. Muestra el gráfico (será interactivo en un entorno como Jupyter)
+        fig.show()
 
- 
+    def plot_salary_by_country_and_job_static(self, df, top_countries=7, min_count=100,
+                                        title="Top Median Salary by Country and Job Title",
+                                        xlabel="Country", ylabel="Median Salary (USD)"):
+        """
+        Plot median salary by job title across countries using static Seaborn/Matplotlib.
+
+        Parameters
+        ----------
+        df : DataFrame with job and salary data
+        top_countries : int -> number of most frequent countries to include
+        min_count : int -> minimum job occurrences per country to display
+        title, xlabel, ylabel : str -> text for plot
+        """
+        df = df.dropna(subset=['salary_year_avg'])
+
+        country_count = df.groupby('normalized_location')['salary_year_avg'].count().reset_index(name='count')
+        valid_countries = country_count[country_count['count'] >= min_count]['normalized_location']
+
+        df_filtered = df[df['normalized_location'].isin(valid_countries)]
+
+
+        stats = df_filtered.groupby(['normalized_location', 'job_title_short'])['salary_year_avg'].median().reset_index()
+        stats = stats.rename(columns={'salary_year_avg': 'median'})
+
+   
+        top_country_list = stats.groupby('normalized_location')['median'].median().nlargest(top_countries).index
+
+        stats = stats[stats['normalized_location'].isin(top_country_list)]
+        
+        plt.figure(figsize=(14, 7))
+        
+
+        sns.barplot(
+            data=stats,
+            x='normalized_location',
+            y='median',
+            hue='job_title_short',
+            palette='set2'
+        )
+        
+     
+        plt.title(title, fontsize=16)
+        plt.xlabel(xlabel, fontsize=12)
+        plt.ylabel(ylabel, fontsize=12)
+
+        plt.legend(title='Job Title', bbox_to_anchor=(1.01, 1), loc='upper left')
+        
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout() 
+
+     
+        plt.show()
     
     def pie_charts_side_by_side(self,df, columns=None, maintitle=None, titles=None, textinfo=None):
         """
