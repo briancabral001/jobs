@@ -41,5 +41,11 @@ However, all interactive charts work perfectly if you run the notebook locally o
 
 ## How to Reproduce the Analysis Locally
 
-**Clone th**
+**Clone this repository**
+bash
+git clone https://github.com/briancabral001/jobs.git
+
+## Author
+
+Brian Cabral
 
